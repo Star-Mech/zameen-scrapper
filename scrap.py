@@ -58,7 +58,16 @@ class City:
 
 
             page = Page(page_url)
-            project_data = page.scrap(driver)
+
+            try:
+                project_data = page.scrap(driver)
+
+                with open(f"data/{project_data['project_name']}", 'w') as json_file:
+                    json.dump(project_data, json_file)
+            
+            except: # Any unhandled exception
+                print(f"Exception on page: {page_url}")
+                continue
             
 
 class Page:
@@ -198,4 +207,11 @@ class Page:
 
 
 
-    
+    if __name__ == "__main__":
+
+        isb_url ='https://www.zameen.com/new-projects/islamabad-3-1/'
+
+        city = City(isb_url)
+
+        driver = webdriver.Chrome()
+        city.scrap()
