@@ -12,64 +12,6 @@ import time
 import random
 import json
 
-
-
-class City:
-    def __init__(self, url) -> None:
-        self.url = url
-    
-    def _get_total_pages(self):
-        response = requests.get(self.url)
-        soup = BeautifulSoup(response.text)
-
-        total_pages = int(soup.select_one('ul[aria-label="Pagination"] > li:nth-last-child(2) > a').text)
-
-        return total_pages
-
-    def get_all_project_links(self):
-        
-        city_project_urls = []
-        total_pages = self._get_total_pages()
-
-        for page in range(1, total_pages+1):
-            time.sleep(random.randint(1, 5))
-            try:
-                response = requests.get(f'https://www.zameen.com/new-projects/islamabad-3-1/?page={page}')
-                    
-                soup = BeautifulSoup(response.text)
-                proj_tags = soup.select("main > div > div > div > div > div > a")
-                urls = [ele.get('href') for ele in proj_tags]
-                city_project_urls.extend(urls)
-            
-            except requests.exceptions.ReadTimeout:
-                time.sleep(10)
-                continue
-            
-        return city_project_urls
-    
-    def scrap(self, driver):
-        city_project_urls = self.get_all_project_links()
-
-        proj_base_url = 'https://www.zameen.com'
-
-        for proj_url in city_project_urls:
-            page_url = proj_base_url + proj_url
-
-
-
-            page = Page(page_url)
-
-            try:
-                project_data = page.scrap(driver)
-
-                with open(f"data/{project_data['project_name']}", 'w') as json_file:
-                    json.dump(project_data, json_file)
-            
-            except: # Any unhandled exception
-                print(f"Exception on page: {page_url}")
-                continue
-            
-
 class Page:
     def __init__(self, url) -> None:
         self.url = url
@@ -207,6 +149,66 @@ class Page:
 
 
 
+class City:
+    def __init__(self, url) -> None:
+        self.url = url
+    
+    def _get_total_pages(self):
+        response = requests.get(self.url)
+        soup = BeautifulSoup(response.text)
+
+        total_pages = int(soup.select_one('ul[aria-label="Pagination"] > li:nth-last-child(2) > a').text)
+
+        return total_pages
+
+    def get_all_project_links(self):
+        
+        city_project_urls = []
+        total_pages = self._get_total_pages()
+
+        for page in range(1, total_pages+1):
+            time.sleep(random.randint(1, 5))
+            try:
+                response = requests.get(f'https://www.zameen.com/new-projects/islamabad-3-1/?page={page}')
+                    
+                soup = BeautifulSoup(response.text)
+                proj_tags = soup.select("main > div > div > div > div > div > a")
+                urls = [ele.get('href') for ele in proj_tags]
+                city_project_urls.extend(urls)
+            
+            except requests.exceptions.ReadTimeout:
+                time.sleep(10)
+                continue
+            
+        return city_project_urls
+    
+    def scrap(self, driver):
+        city_project_urls = self.get_all_project_links()
+
+        print(f'Gotten {len(city_project_urls)} project Links are: {city_project_urls}')
+
+        proj_base_url = 'https://www.zameen.com'
+
+        for proj_url in city_project_urls:
+            page_url = proj_base_url + proj_url
+
+
+
+            page = Page(page_url)
+
+            try:
+                project_data = page.scrap(driver)
+
+                with open(f"data/{project_data['project_name']}", 'w') as json_file:
+                    json.dump(project_data, json_file)
+            
+            except: # Any unhandled exception
+                print(f"Exception on page: {page_url}")
+                continue
+            
+
+
+
     if __name__ == "__main__":
 
         isb_url ='https://www.zameen.com/new-projects/islamabad-3-1/'
@@ -214,4 +216,4 @@ class Page:
         city = City(isb_url)
 
         driver = webdriver.Chrome()
-        city.scrap()
+        city.scrap(driver)
