@@ -209,11 +209,11 @@ class City:
 
 
 
-    if __name__ == "__main__":
+if __name__ == "__main__":
 
-        isb_url ='https://www.zameen.com/new-projects/islamabad-3-1/'
+    isb_url ='https://www.zameen.com/new-projects/islamabad-3-1/'
 
-        city = City(isb_url)
+    city = City(isb_url)
 
-        driver = webdriver.Chrome()
-        city.scrap(driver)
+    driver = webdriver.Chrome()
+    city.scrap(driver)
