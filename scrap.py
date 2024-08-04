@@ -12,6 +12,9 @@ import time
 import random
 import json
 
+
+from info import isb_proj_links
+
 class Page:
     def __init__(self, url) -> None:
         self.url = url
@@ -209,6 +212,26 @@ class City:
 
 
 
+    def scrap_given_links(self, driver, links):
+            
+            for proj_url in links:
+                page_url = proj_url
+
+                page = Page(page_url)
+
+                try:
+                    project_data = page.scrap(driver)
+
+                    with open(f"data/{project_data['project_name']}", 'w') as json_file:
+                        json.dump(project_data, json_file)
+                
+                except: # Any unhandled exception
+                    print(f"Exception on page: {page_url}")
+                    continue
+                
+
+
+
 if __name__ == "__main__":
 
     isb_url ='https://www.zameen.com/new-projects/islamabad-3-1/'
@@ -216,4 +239,4 @@ if __name__ == "__main__":
     city = City(isb_url)
 
     driver = webdriver.Chrome()
-    city.scrap(driver)
+    city.scrap_given_links(driver, isb_proj_links)
